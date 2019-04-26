@@ -1,0 +1,143 @@
+<!-- product.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5GS39L6');</script>
+<!-- End Google Tag Manager -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Products</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17-beta.0/vue.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .section-container {
+      max-width: 800px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5GS39L6"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+  <div id="product" class="container">
+    <section class="section section-container" style="padding-top: 24px; padding-bottom: 5px;">
+        <h2 class="title">Detalles</h2>
+        <product
+            :key="product.SKU"
+            :product="product"
+        />
+    </section>
+   
+  </div>
+  <script>
+  const ShowProduct = {
+    props: ['product'],
+    data () {
+      return {
+        sku: this.product ? this.product.sku : 'no hay',
+        name: this.product ? this.product.name : 'no hay'
+      }
+    }
+  }
+
+  const ShowDetails = {
+    props: ['product'],
+    data(){
+      return{
+        sku: this.product ? this.product.sku : 'error D:',
+        name: this.product ? this.product.name : 'error D:'
+      }
+    }
+  }
+  
+  const Product = {
+    props: ['product'],
+    components: { 'add-update-product': ShowProduct },
+    data () {
+      return {        
+        showDetail: true
+      }
+    },
+    methods: {
+      onShowProduct(product) {
+        this.$emit('save-product', product)
+      },
+      onShowDetails(product) {
+        this.$emit('show-product', product)
+      }
+    },
+    template: `
+      <div class="card">
+        <header class="card-header">
+          <p @click="showDetail = !showDetail" class="card-header-title">
+             {{ product.Name }}            
+          </p>
+        </header>
+        <div v-show="showDetail" class="card-content">
+            <img src="images/test.png" alt="Simply Easy Learning" width="100" height="100"> 
+            <p>Código de producto: {{ product.SKU }}</p>
+        </div>
+      </div>
+    `
+  }
+  
+ new Vue({
+    el: '#product',
+    components: { product: Product, 'add-update-product': ShowProduct },
+    data: {
+      products: [],
+      apiURL: 'http://localhost:3000/api/product/detail?='.concat(product.sku)
+    },
+    showDetails(product){
+        return axios.get('http://localhost:3000/api/product/detail?='.concat(product.sku), product)
+        //.then((response) => {
+        
+        //}
+      },
+ 
+    beforeMount () {
+      axios.get(this.apiURL)
+        .then((response) => {
+          this.products = response.data
+        })
+    }
+  })
+  
+ /* var showP = new Vue({
+    el: '#showP',
+    components: {product: Product, 'show-product': ShowDetails},
+    data: {
+        apiURL: 'http://localhost:3000/api/product/detail:sku'
+    },
+    methods: {
+      showDetails(product){
+        return axios.get(`${this.apiURL}/${product.sku}`, product)
+        //.then((response) => {
+        
+        //}
+      }
+    },
+    beforeMount () {
+      axios.get(this.apiURL)
+        .then((response) => {
+          this.product = response.data
+        })
+    }
+  })
+  */
+  </script>
+</body>
+</html>
